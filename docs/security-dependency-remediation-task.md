@@ -1,15 +1,15 @@
 # Task: Remediate dependency security alerts for Specdest LP
 
 ## Context
-- Repository: `/workspace/specdest-company/services/specdest-company.github.io` (Mac Local Coder Docker path).
-- GitHub: `git@github.com:specdest-org/specdest-company.github.io.git`.
+- Repository: `/workspace/specdest-company/services/specdest-lp` (Mac Local Coder Docker path).
+- GitHub: `git@github.com:specdest-org/specdest-lp.git`.
 - Baseline commit at handoff: `8f6e9e4` (`seo: clarify system development and AI consulting positioning`), on `main`.
 - GitHub reported **51 dependency vulnerabilities: 10 high, 36 moderate, 5 low** during the push of that commit. These are **GitHub's reported alert totals**, not independently verified exploitable production vulnerabilities. Recheck current alert status and distinguish direct/transitive, production/build-only, and reachable/not reachable findings.
 - Stack: React 18, React Router 6, Vite 4, TypeScript 4.9, pnpm lockfile; prerendered static React/Vite site deployed to Firebase Hosting. Production does **not** run a Node server.
 - Project scripts: `npm run build`, `npm run seo:audit`, `npm run preview`; deployment is `pnpm run deploy` (Firebase project `specdest-lp`).
 - Source-of-truth decisions: `docs/README.md`, `docs/website-decisions.md`, `docs/website-direction.md`, `docs/architecture.md`.
 - Controller rules: `/workspace/specdest-company/tools/controller/agents.md`. Read this first, then check project-local agent instructions if present.
-- Alert dashboard: `https://github.com/specdest-org/specdest-company.github.io/security/dependabot` (requires appropriate repository access).
+- Alert dashboard: `https://github.com/specdest-org/specdest-lp/security/dependabot` (requires appropriate repository access).
 
 ## Objective
 Resolve confirmed dependency security alerts with the **smallest compatible updates** while preserving appearance, routing, SEO metadata, static prerender, and Firebase hosting behavior. Do not treat the raw count as proof that deployed client code is vulnerable.
