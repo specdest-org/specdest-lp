@@ -1,4 +1,6 @@
 const measurementId = 'G-CH9NXJH2NW';
+const trackingParams = ['utm_source', 'utm_medium', 'utm_campaign', 'source'] as const;
+let initialReferralTracked = false;
 
 type AnalyticsParams = Record<string, string | number | boolean | undefined>;
 
@@ -48,11 +50,38 @@ export function trackEvent(name: string, params: AnalyticsParams = {}) {
   window.gtag?.('event', name, params);
 }
 export function trackPageView(path: string, title: string) {
+  const pageUrl = new URL(path, window.location.origin);
+  const currentParams = new URLSearchParams(window.location.search);
+  for (const key of trackingParams) {
+    const value = currentParams.get(key);
+    // Do not forward arbitrary URL parameters (which may contain personal data).
+    if (value && /^[a-z0-9_-]{1,80}$/i.test(value)) pageUrl.searchParams.set(key, value);
+  }
+
   trackEvent('page_view', {
-    page_location: `${window.location.origin}${path}`,
+    page_location: pageUrl.toString(),
     page_path: path,
     page_title: title,
   });
+
+  if (!initialReferralTracked) {
+    initialReferralTracked = true;
+    const hasChatgptSource = ['utm_source', 'source'].some((key) => currentParams.get(key)?.toLowerCase() === 'chatgpt');
+    let chatgptReferrer = false;
+    try {
+      const host = new URL(document.referrer).hostname.toLowerCase();
+      chatgptReferrer = host === 'chatgpt.com' || host.endsWith('.chatgpt.com') || host === 'chat.openai.com';
+    } catch {
+      // Direct visits and stripped referrers have no parseable referrer.
+    }
+    if (hasChatgptSource || chatgptReferrer) {
+      trackEvent('ai_referral', {
+        referral_source: 'chatgpt',
+        attribution_method: hasChatgptSource ? 'url_parameter' : 'referrer',
+        landing_page: path,
+      });
+    }
+  }
 
   if (path === '/contact') trackEvent('contact_view');
   if (path.startsWith('/cases/')) trackEvent('case_view', { case_path: path });

@@ -19,6 +19,12 @@ Tracked events:
 - `cta_click`
 - `case_view`
 - `insight_view`
+- `ai_referral` (once per browser page load when the landing URL has `utm_source=chatgpt` or `source=chatgpt`, or the browser referrer is ChatGPT)
+
+Referral attribution:
+- `page_view.page_location` preserves only `utm_source`, `utm_medium`, `utm_campaign`, and `source` with simple alphanumeric, underscore, or hyphen values (max 80 characters). Other URL parameters are not sent.
+- `ai_referral` reports `referral_source=chatgpt`, `attribution_method` (`url_parameter` or `referrer`), and `landing_page`; it does not send the raw referrer or other query parameters.
+- ChatGPT does not always attach URL parameters or provide a referrer, so attribution will be incomplete. GA4 event parameters may need custom dimensions registered to appear in standard reports.
 
 ## Performance and SEO
 - Do not place a synchronous Google Analytics script in `index.html`.
